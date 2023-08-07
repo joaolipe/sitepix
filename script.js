@@ -1,23 +1,25 @@
-const countElement = document.getElementById('count');
+const contadorSpan = document.getElementById("contador");
 
-function updateCount() {
-    let count = parseInt(getCookie('accessCount')) || 0;
-    count++;
-    setCookie('accessCount', count, 365);
-    countElement.textContent = `Acessos: ${count}`;
+// Verificar se o contador já existe no armazenamento local
+if (localStorage.getItem("contadorAcessos")) {
+  const contadorAtual = parseInt(localStorage.getItem("contadorAcessos"));
+  contadorSpan.textContent = contadorAtual;
+} else {
+  // Caso o contador não exista no armazenamento local, criar um novo contador
+  localStorage.setItem("contadorAcessos", "0");
+  contadorSpan.textContent = "0";
 }
 
-function getCookie(name) {
-    const value = "; " + document.cookie;
-    const parts = value.split("; " + name + "=");
-    if (parts.length === 2) return parts.pop().split(";").shift();
-}
+// Incrementar o contador quando o site for acessado
+const novoContador = parseInt(contadorSpan.textContent) + 1;
+localStorage.setItem("contadorAcessos", novoContador.toString());
+contadorSpan.textContent = novoContador;
 
-function setCookie(name, value, days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + value + "; " + expires + "; path=/";
-}
-
-updateCount();
+// Atualizar o contador quando a página for fechada ou recarregada
+window.addEventListener("beforeunload", () => {
+  const contadorAtual = parseInt(localStorage.getItem("contadorAcessos"));
+  if (contadorAtual > 0) {
+    const novoContador = contadorAtual - 1;
+    localStorage.setItem("contadorAcessos", novoContador.toString());
+  }
+});
